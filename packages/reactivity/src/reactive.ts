@@ -1,4 +1,5 @@
 import { isObject, toRawType, def } from '@vue/shared'
+// 导入不同API需要的Handlers
 import {
   mutableHandlers,
   readonlyHandlers,
@@ -170,6 +171,14 @@ export function shallowReadonly<T extends object>(
   )
 }
 
+/**
+ *
+ * @param target 要代理的对象
+ * @param isReadonly 对象是否仅为可读
+ * @param baseHandlers 不同的API会传入不同的handler
+ * @param collectionHandlers 一些特殊的集合，比如set，需要特殊的handler
+ * @param proxyMap 不同的API会传入不同的缓存map
+ */
 function createReactiveObject(
   target: Target,
   isReadonly: boolean,
@@ -177,6 +186,7 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
+  // 判断是否为对象 如果不是对象 就不能使用proxy解析
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -185,6 +195,7 @@ function createReactiveObject(
   }
   // target is already a Proxy, return it.
   // exception: calling readonly() on a reactive object
+  // 如果对象已经是一个proxy(把这个函数的返回值再传进来作为target的情况) 直接返回
   if (
     target[ReactiveFlags.RAW] &&
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
@@ -192,20 +203,25 @@ function createReactiveObject(
     return target
   }
   // target already has corresponding Proxy
+  // 一个小优化 如果对象已经被代理过了 直接返回已经被代理的对象
   const existingProxy = proxyMap.get(target)
   if (existingProxy) {
     return existingProxy
   }
   // only a whitelist of value types can be observed.
+  // 没看懂这是干嘛的 以后再说
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
   }
+  // 创建一个proxy
   const proxy = new Proxy(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  // 设置缓存
   proxyMap.set(target, proxy)
+  // 返回
   return proxy
 }
 

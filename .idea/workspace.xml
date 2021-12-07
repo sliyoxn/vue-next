@@ -50,7 +50,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a3f2368-0abe-4a40-b3ed-8195bd9d63da" name="Default Changelist" comment="" />
+    <list default="true" id="1a3f2368-0abe-4a40-b3ed-8195bd9d63da" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -76,6 +82,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.standard" value="" />
     <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="ts.external.directory.path" value="C:\Sortware\WebStorm\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -86,7 +93,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1638708077967</updated>
-      <workItem from="1638708079268" duration="348000" />
+      <workItem from="1638708079268" duration="11929000" />
+      <workItem from="1638801197560" duration="6000" />
+      <workItem from="1638801371887" duration="9686000" />
     </task>
     <servers />
   </component>
@@ -103,11 +112,20 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="881" y="455" key="#ESLint" timestamp="1638708097895">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
     <state x="881" y="455" key="#ESLint/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638708097895" />
+    <state x="526" y="221" key="SettingsEditor" timestamp="1638708878272">
+      <screen x="0" y="0" width="2048" height="1152" />
+    </state>
+    <state x="526" y="221" key="SettingsEditor/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638708878272" />
+    <state x="783" y="259" width="598" height="568" key="find.popup" timestamp="1638866477003">
+      <screen x="0" y="0" width="2048" height="1152" />
+    </state>
+    <state x="783" y="259" width="598" height="568" key="find.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638866477003" />
   </component>
 </project>

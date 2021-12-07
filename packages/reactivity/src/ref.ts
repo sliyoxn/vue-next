@@ -38,6 +38,8 @@ export function isRef(r: any): r is Ref {
 export function ref<T extends object>(value: T): ToRef<T>
 export function ref<T>(value: T): Ref<UnwrapRef<T>>
 export function ref<T = any>(): Ref<T | undefined>
+// ref的定义
+// ref可以把原始值制作成响应式的, 使用的是访问器属性
 export function ref(value?: unknown) {
   return createRef(value)
 }
@@ -56,28 +58,42 @@ class RefImpl<T> {
 
   public readonly __v_isRef = true
 
+  // 在参数名前加个修饰符代表把这个属性挂载到对象实例上
+  // 也就是相当于this._rawValue = undefined
+  // 虽然我觉得这么写很怪就是了
   constructor(private _rawValue: T, public readonly _shallow = false) {
+    // 如果设置了shallow, 使用原值就可
+    // 否则调用reactive进行转化
     this._value = _shallow ? _rawValue : convert(_rawValue)
   }
 
+  // 访问器属性
   get value() {
+    // track，在这里收集effect
+    // 和reactive是一样的
     track(toRaw(this), TrackOpTypes.GET, 'value')
     return this._value
   }
-
+  // 在这里触发effect重新执行
   set value(newVal) {
+    // 检查值是否变化
+    // 变化才进行接下来的逻辑
     if (hasChanged(toRaw(newVal), this._rawValue)) {
       this._rawValue = newVal
+      // 如果是对象更新了 需要重新进行代理
       this._value = this._shallow ? newVal : convert(newVal)
+      // 触发effect重新执行
       trigger(toRaw(this), TriggerOpTypes.SET, 'value', newVal)
     }
   }
 }
 
 function createRef(rawValue: unknown, shallow = false) {
+  // 看看是不是已经是ref类型
   if (isRef(rawValue)) {
     return rawValue
   }
+  // 不是再创建
   return new RefImpl(rawValue, shallow)
 }
 
@@ -146,11 +162,16 @@ export function customRef<T>(factory: CustomRefFactory<T>): Ref<T> {
   return new CustomRefImpl(factory) as any
 }
 
+/**
+ * 把一个对象的属性全部转化成用ref执行一遍
+ * @param object
+ */
 export function toRefs<T extends object>(object: T): ToRefs<T> {
   if (__DEV__ && !isProxy(object)) {
     console.warn(`toRefs() expects a reactive object but received a plain one.`)
   }
   const ret: any = isArray(object) ? new Array(object.length) : {}
+  // 普通循环
   for (const key in object) {
     ret[key] = toRef(object, key)
   }
@@ -171,10 +192,19 @@ class ObjectRefImpl<T extends object, K extends keyof T> {
   }
 }
 
+// 定义toRef
+/**
+ * 把对象的某个属性转化成ref
+ * @param object
+ * @param key
+ */
 export function toRef<T extends object, K extends keyof T>(
   object: T,
   key: K
 ): ToRef<T[K]> {
+  // 简单判断一下
+  // 如果已经是ref类型就直接返回
+  // 否则
   return isRef(object[key])
     ? object[key]
     : (new ObjectRefImpl(object, key) as any)
