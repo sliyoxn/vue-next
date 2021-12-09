@@ -46,6 +46,8 @@ const shallowReadonlyGet = /*#__PURE__*/ createGetter(true, true)
 const arrayInstrumentations: Record<string, Function> = {}
 // instrument identity-sensitive Array methods to account for possible reactive
 // values
+// 和Vue2差不多
+// 劫持了原有的方法 然后用新的方法覆盖原有的方法 新的方法中会调用老方法，并增加了一些逻辑
 ;(['includes', 'indexOf', 'lastIndexOf'] as const).forEach(key => {
   const method = Array.prototype[key] as any
   arrayInstrumentations[key] = function(this: unknown[], ...args: unknown[]) {
@@ -65,6 +67,8 @@ const arrayInstrumentations: Record<string, Function> = {}
 })
 // instrument length-altering mutation methods to avoid length being tracked
 // which leads to infinite loops in some cases (#2137)
+// 修复这个bug：https://github.com/vuejs/vue-next/pull/2138
+// 但是正经人谁这么写
 ;(['push', 'pop', 'shift', 'unshift', 'splice'] as const).forEach(key => {
   const method = Array.prototype[key] as any
   arrayInstrumentations[key] = function(this: unknown[], ...args: unknown[]) {
@@ -108,13 +112,15 @@ function createGetter(isReadonly = false, shallow = false) {
     }
 
     const targetIsArray = isArray(target)
-
+    // 如果是数组 对includes，indexOf，lastIndexOf方法进行处理
+    // 主要是为了处理proxy(['a', 'b', 'c']).includes(x)这样的操作
     if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
       return Reflect.get(arrayInstrumentations, key, receiver)
     }
     // 普通属性会走到这里，res就是获取的对象上属性的值
     const res = Reflect.get(target, key, receiver)
-
+    // 如果是内置Symbol或者通过原型链或者是不用继续收集的依赖
+    // 直接返回
     if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
       return res
     }
@@ -129,7 +135,7 @@ function createGetter(isReadonly = false, shallow = false) {
       return res
     }
     // 这是处理ref的逻辑
-    // ref的真正值是ref.value，所以要unwrap一次
+    // ref的真正值是ref.value，unwrap一次，就当是自动拆包了
     if (isRef(res)) {
       // ref unwrapping - does not apply for Array + integer key.
       const shouldUnwrap = !targetIsArray || !isIntegerKey(key)
@@ -164,10 +170,13 @@ function createSetter(shallow = false) {
   ): boolean {
     // 获取旧值
     let oldValue = (target as any)[key]
+    // 可能对象被深层代理了 let proxy = reactive({r: 1}); proxy.r = reactive({a: 1})
     if (!shallow) {
+      // 如果设置的值是reactive过的 转化为普通对象
       value = toRaw(value)
       oldValue = toRaw(oldValue)
       if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
+        // 老的是ref 新的不是ref 则会给老的ref赋值
         oldValue.value = value
         return true
       }
@@ -184,8 +193,10 @@ function createSetter(shallow = false) {
     // set操作
     const result = Reflect.set(target, key, value, receiver)
     // don't trigger if target is something up in the prototype chain of original
+    //
     // 触发更新
     // 触发收集的effect
+    // 处理原型链被修改的情况
     if (target === toRaw(receiver)) {
       if (!hadKey) {
         // 新增
@@ -232,7 +243,8 @@ export const mutableHandlers: ProxyHandler<object> = {
 
 export const readonlyHandlers: ProxyHandler<object> = {
   get: readonlyGet,
-  set(target, key) {  // 只读的setter直接抛出错误
+  set(target, key) {
+    // 只读的setter直接抛出错误
     if (__DEV__) {
       console.warn(
         `Set operation on key "${String(key)}" failed: target is readonly.`,

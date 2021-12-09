@@ -51,16 +51,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a3f2368-0abe-4a40-b3ed-8195bd9d63da" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/packages/reactivity/examples/computed.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/reactivity/examples/relative.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/computed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/computed.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -72,6 +84,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -95,7 +108,8 @@
       <updated>1638708077967</updated>
       <workItem from="1638708079268" duration="11929000" />
       <workItem from="1638801197560" duration="6000" />
-      <workItem from="1638801371887" duration="9686000" />
+      <workItem from="1638801371887" duration="10942000" />
+      <workItem from="1638967527219" duration="12094000" />
     </task>
     <servers />
   </component>
@@ -119,13 +133,17 @@
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
     <state x="881" y="455" key="#ESLint/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638708097895" />
+    <state x="755" y="323" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1638970318196">
+      <screen x="0" y="0" width="2048" height="1152" />
+    </state>
+    <state x="755" y="323" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638970318196" />
     <state x="526" y="221" key="SettingsEditor" timestamp="1638708878272">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
     <state x="526" y="221" key="SettingsEditor/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638708878272" />
-    <state x="783" y="259" width="598" height="568" key="find.popup" timestamp="1638866477003">
+    <state x="783" y="259" width="598" height="568" key="find.popup" timestamp="1639027047311">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
-    <state x="783" y="259" width="598" height="568" key="find.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638866477003" />
+    <state x="783" y="259" width="598" height="568" key="find.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1639027047311" />
   </component>
 </project>

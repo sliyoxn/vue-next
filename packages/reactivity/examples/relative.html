@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script src="../dist/reactivity.global.js"></script>
+    <script>
+        const {reactive, ref, readonly} = VueReactivity;
+        const data = {
+            name: 'Sakura',
+            age: 16
+        }
+        const proxy = reactive(data);
+        debugger;
+        const readonlyProxy = readonly(proxy);
+        console.log(readonlyProxy === proxy);
+    </script>
+</body>
+</html>

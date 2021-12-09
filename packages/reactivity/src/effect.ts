@@ -106,11 +106,12 @@ function createReactiveEffect<T = any>(
       return options.scheduler ? undefined : fn()
     }
     // effectStack不包含当前的effect
-    // 主要是为了有哈批写出这种代码
-    /**
-     * effect(() => {data.count++});
-     */
+    // 主要是为了有哈批写出这种代码: effect(() => {data.count++});
     if (!effectStack.includes(effect)) {
+      // 每次重新执行effect都会再调用get方法
+      // 这时候需要重新进行依赖收集
+      // 因为有些时候重新执行后不再依赖某些依赖了，所以先clean一波
+      // 比如effect(() => { if( data.name === 'Sakura' ) {console.log(data.age)} })
       cleanup(effect)
       try {
         // 开启追踪(其实就是改变个标识)
@@ -141,14 +142,21 @@ function createReactiveEffect<T = any>(
   effect._isEffect = true
   // 是否激活
   effect.active = true
+  // 存储对应的原函数
   effect.raw = fn
   // effect的依赖
+  // 比如一个effect里访问了data.name和data.age
+  // 这里就会记录这些deps 用于之后的 stop
   effect.deps = []
   // effect的配置
   effect.options = options
   return effect
 }
 
+/**
+ * 清空被收集的effect
+ * @param effect
+ */
 function cleanup(effect: ReactiveEffect) {
   const { deps } = effect
   if (deps.length) {
@@ -209,6 +217,8 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   // 如果没有就加入 虽然set本身就有去重的功能hhh
   if (!dep.has(activeEffect)) {
     dep.add(activeEffect)
+    // 相互记录 让effect知道哪些的deps存储了这个effect
+    // 用于之后的移除
     activeEffect.deps.push(dep)
     if (__DEV__ && activeEffect.options.onTrack) {
       activeEffect.options.onTrack({
@@ -345,11 +355,12 @@ export function trigger(
     }
     // 调度
     // 默认情况下都是scheduler是undefined
+    // 除非写代码时在options里传进去
     if (effect.options.scheduler) {
       effect.options.scheduler(effect)
     } else {
       // 一般会直接执行effect
-      // 才发现没有合并执行了 怪怪的
+      // 才发现没有合并执行了 估计是抽离出去了吧
       effect()
     }
   }

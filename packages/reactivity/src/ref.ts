@@ -166,6 +166,18 @@ export function customRef<T>(factory: CustomRefFactory<T>): Ref<T> {
  * 把一个对象的属性全部转化成用ref执行一遍
  * @param object
  */
+// 一般这样用, 这样在模板里就可以直接{{name}} {{age}}了
+/**
+ * setup() {
+ *     let state = reactive({name: 'sena', age: 16});
+ *     // 或者先解构再return 避免重名
+ *     // let  {name, age} = toRefs(state);
+ *     return {
+ *         ...toRefs(state)
+ *     }
+ * }
+ * @param object
+ */
 export function toRefs<T extends object>(object: T): ToRefs<T> {
   if (__DEV__ && !isProxy(object)) {
     console.warn(`toRefs() expects a reactive object but received a plain one.`)
@@ -178,9 +190,18 @@ export function toRefs<T extends object>(object: T): ToRefs<T> {
   return ret
 }
 
+/**
+ * 用于toRef的实现
+ */
 class ObjectRefImpl<T extends object, K extends keyof T> {
   public readonly __v_isRef = true
 
+  // 其实就是个代理
+  // 把源对象和要操作的属性存起来后，之后返回一个proxy对象
+  // 之后get操作会返回对象属性的值 set操作会修改对象属性的值
+
+  // 所以 它本身是没有响应式的功能的 就是一个普通的代理
+  // 如果源对象不是响应式的 那它也不会有响应式的功能
   constructor(private readonly _object: T, private readonly _key: K) {}
 
   get value() {
@@ -193,6 +214,15 @@ class ObjectRefImpl<T extends object, K extends keyof T> {
 }
 
 // 定义toRef
+// 主要用处是
+/**
+ * let proxy = reactive({name : 'sena'});
+ * // 不行
+ * let {name} = proxy;
+ * // 可以
+ * let nameRef = toRef = toRef(proxy, 'name');
+ */
+// 顺带一提这玩意和ref没啥关系
 /**
  * 把对象的某个属性转化成ref
  * @param object

@@ -55,6 +55,8 @@ function targetTypeMap(rawType: string) {
 }
 
 function getTargetType(value: Target) {
+  // 检测对象是否可以被代理
+  // 如果存在ReactiveFlags.SKIP 那对象就算不可被代理的
   return value[ReactiveFlags.SKIP] || !Object.isExtensible(value)
     ? TargetType.INVALID
     : targetTypeMap(toRawType(value))
@@ -88,9 +90,11 @@ export type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRef<T>
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
   // if trying to observe a readonly proxy, return the readonly version.
+  // 如果已经被readonly代理过了
   if (target && (target as Target)[ReactiveFlags.IS_READONLY]) {
     return target
   }
+  // 创建响应式对象
   return createReactiveObject(
     target,
     false,
@@ -175,8 +179,8 @@ export function shallowReadonly<T extends object>(
  *
  * @param target 要代理的对象
  * @param isReadonly 对象是否仅为可读
- * @param baseHandlers 不同的API会传入不同的handler
- * @param collectionHandlers 一些特殊的集合，比如set，需要特殊的handler
+ * @param baseHandlers 不同的API会传入不同的handler，普通的对象和数组会使用这个handler
+ * @param collectionHandlers 一些特殊的集合，比如set, map，需要特殊的handler
  * @param proxyMap 不同的API会传入不同的缓存map
  */
 function createReactiveObject(
@@ -186,7 +190,7 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
-  // 判断是否为对象 如果不是对象 就不能使用proxy解析
+  // 判断是否为对象 如果不是对象 就不能使用proxy解析 直接返回
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -195,7 +199,8 @@ function createReactiveObject(
   }
   // target is already a Proxy, return it.
   // exception: calling readonly() on a reactive object
-  // 如果对象已经是一个proxy(把这个函数的返回值再传进来作为target的情况) 直接返回
+  // 如果对象已经是一个proxy, 也就是被代理过(把这个函数的返回值再传进来作为target的情况) 直接返回
+  // 对应readonly(relative(obj))这种情况
   if (
     target[ReactiveFlags.RAW] &&
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
@@ -209,12 +214,14 @@ function createReactiveObject(
     return existingProxy
   }
   // only a whitelist of value types can be observed.
-  // 没看懂这是干嘛的 以后再说
+  // 看对象是否是可扩展的
+  // 不可扩展直接返回
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
   }
   // 创建一个proxy
+  // 如果是普通对象，使用baseHandler，集合使用collectionHandler
   const proxy = new Proxy(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
@@ -246,6 +253,11 @@ export function toRaw<T>(observed: T): T {
   )
 }
 
+/**
+ * 用于标记这个对象是否可以被代理
+ * 一般用在某些类库上 类库的对象不能被代理
+ * @param value
+ */
 export function markRaw<T extends object>(value: T): T {
   def(value, ReactiveFlags.SKIP, true)
   return value
