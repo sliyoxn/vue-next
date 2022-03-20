@@ -86,7 +86,7 @@ export function renderComponentVNode(
   const instance = createComponentInstance(vnode, parentComponent, null)
   const res = setupComponent(instance, true /* isSSR */)
   const hasAsyncSetup = isPromise(res)
-  const prefetches = instance.sp
+  const prefetches = instance.sp /* LifecycleHooks.SERVER_PREFETCH */
   if (hasAsyncSetup || prefetches) {
     let p: Promise<unknown> = hasAsyncSetup
       ? (res as Promise<void>)
@@ -128,12 +128,17 @@ function renderComponentSubTree(
       comp.ssrRender = ssrCompile(comp.template, instance)
     }
 
+    // perf: enable caching of computed getters during render
+    // since there cannot be state mutations during render.
+    for (const e of instance.scope.effects) {
+      if (e.computed) e.computed._cacheable = true
+    }
+
     const ssrRender = instance.ssrRender || comp.ssrRender
     if (ssrRender) {
       // optimized
       // resolve fallthrough attrs
-      let attrs =
-        instance.type.inheritAttrs !== false ? instance.attrs : undefined
+      let attrs = instance.inheritAttrs !== false ? instance.attrs : undefined
       let hasCloned = false
 
       let cur = instance

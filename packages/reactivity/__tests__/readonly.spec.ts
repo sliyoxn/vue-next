@@ -178,7 +178,10 @@ describe('reactivity/readonly', () => {
       test('should make nested values readonly', () => {
         const key1 = {}
         const key2 = {}
-        const original = new Collection([[key1, {}], [key2, {}]])
+        const original = new Collection([
+          [key1, {}],
+          [key2, {}]
+        ])
         const wrapped = readonly(original)
         expect(wrapped).not.toBe(original)
         expect(isProxy(wrapped)).toBe(true)
@@ -228,7 +231,10 @@ describe('reactivity/readonly', () => {
         test('should retrieve readonly values on iteration', () => {
           const key1 = {}
           const key2 = {}
-          const original = new Map([[key1, {}], [key2, {}]])
+          const original = new Map([
+            [key1, {}],
+            [key2, {}]
+          ])
           const wrapped: any = readonly(original)
           expect(wrapped.size).toBe(2)
           for (const [key, value] of wrapped) {
@@ -246,7 +252,12 @@ describe('reactivity/readonly', () => {
         test('should retrieve reactive + readonly values on iteration', () => {
           const key1 = {}
           const key2 = {}
-          const original = reactive(new Map([[key1, {}], [key2, {}]]))
+          const original = reactive(
+            new Map([
+              [key1, {}],
+              [key2, {}]
+            ])
+          )
           const wrapped: any = readonly(original)
           expect(wrapped.size).toBe(2)
           for (const [key, value] of wrapped) {
@@ -382,7 +393,7 @@ describe('reactivity/readonly', () => {
     const eff = effect(() => {
       roArr.includes(2)
     })
-    expect(eff.deps.length).toBe(0)
+    expect(eff.effect.deps.length).toBe(0)
   })
 
   test('readonly should track and trigger if wrapping reactive original (collection)', () => {
@@ -427,7 +438,8 @@ describe('reactivity/readonly', () => {
   })
 
   test('should make ref readonly', () => {
-    const n: any = readonly(ref(1))
+    const n = readonly(ref(1))
+    // @ts-expect-error
     n.value = 2
     expect(n.value).toBe(1)
     expect(
@@ -435,7 +447,7 @@ describe('reactivity/readonly', () => {
     ).toHaveBeenWarned()
   })
 
-  // https://github.com/vuejs/vue-next/issues/3376
+  // https://github.com/vuejs/core/issues/3376
   test('calling readonly on computed should allow computed to set its private properties', () => {
     const r = ref<boolean>(false)
     const c = computed(() => r.value)
@@ -453,5 +465,36 @@ describe('reactivity/readonly', () => {
     expect(
       'Set operation on key "randomProperty" failed: target is readonly.'
     ).toHaveBeenWarned()
+  })
+
+  // #4986
+  test('setting a readonly object as a property of a reactive object should retain readonly proxy', () => {
+    const r = readonly({})
+    const rr = reactive({}) as any
+    rr.foo = r
+    expect(rr.foo).toBe(r)
+    expect(isReadonly(rr.foo)).toBe(true)
+  })
+
+  test('attemptingt to write plain value to a readonly ref nested in a reactive object should fail', () => {
+    const r = ref(false)
+    const ror = readonly(r)
+    const obj = reactive({ ror })
+    try {
+      obj.ror = true
+    } catch (e) {}
+
+    expect(obj.ror).toBe(false)
+  })
+  test('replacing a readonly ref nested in a reactive object with a new ref', () => {
+    const r = ref(false)
+    const ror = readonly(r)
+    const obj = reactive({ ror })
+    try {
+      obj.ror = ref(true) as unknown as boolean
+    } catch (e) {}
+
+    expect(obj.ror).toBe(true)
+    expect(toRaw(obj).ror).not.toBe(ror) // ref successfully replaced
   })
 })
