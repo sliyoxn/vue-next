@@ -1,13 +1,24 @@
+/**
+ * 位运算标识位
+ * 可以方便的用与运算判断虚拟DOM类型（包括自己的和子节点的）
+ */
 export const enum ShapeFlags {
+  // 00000001
   ELEMENT = 1,
+  // 00000010
   FUNCTIONAL_COMPONENT = 1 << 1,
+  // 00000100
   STATEFUL_COMPONENT = 1 << 2,
   TEXT_CHILDREN = 1 << 3,
   ARRAY_CHILDREN = 1 << 4,
   SLOTS_CHILDREN = 1 << 5,
   TELEPORT = 1 << 6,
+  // 10000000
   SUSPENSE = 1 << 7,
+  // 100000000
   COMPONENT_SHOULD_KEEP_ALIVE = 1 << 8,
+  // 1000000000
   COMPONENT_KEPT_ALIVE = 1 << 9,
+  // 00000100 | 00000010 = 00000110
   COMPONENT = ShapeFlags.STATEFUL_COMPONENT | ShapeFlags.FUNCTIONAL_COMPONENT
 }

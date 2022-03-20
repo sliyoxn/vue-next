@@ -7,6 +7,14 @@ import {
 
 export const xlinkNS = 'http://www.w3.org/1999/xlink'
 
+/**
+ * 用于更新属性的值
+ * @param el
+ * @param key
+ * @param value
+ * @param isSVG
+ * @param instance
+ */
 export function patchAttr(
   el: Element,
   key: string,
@@ -15,6 +23,7 @@ export function patchAttr(
   instance?: ComponentInternalInstance | null
 ) {
   if (isSVG && key.startsWith('xlink:')) {
+    // SVG 不看
     if (value == null) {
       el.removeAttributeNS(xlinkNS, key.slice(6, key.length))
     } else {
@@ -27,6 +36,7 @@ export function patchAttr(
 
     // note we are only checking boolean attributes that don't have a
     // corresponding dom prop of the same name here.
+    // 处理一些boolean类型的attr
     const isBoolean = isSpecialBooleanAttr(key)
     if (value == null || (isBoolean && value === false)) {
       el.removeAttribute(key)

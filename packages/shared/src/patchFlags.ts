@@ -16,6 +16,10 @@
  * Check the `patchElement` function in '../../runtime-core/src/renderer.ts' to see how the
  * flags are handled during diff.
  */
+
+/**
+ * 定义PatchFlags 用于标记某个节点有哪些内容是动态的
+ */
 export const enum PatchFlags {
   /**
    * Indicates an element with dynamic textContent (children fast path)
@@ -108,6 +112,7 @@ export const enum PatchFlags {
    * Indicates a hoisted static vnode. This is a hint for hydration to skip
    * the entire sub tree since static content never needs to be updated.
    */
+  // 纯静态节点
   HOISTED = -1,
   /**
    * A special flag that indicates that the diffing algorithm should bail out
@@ -116,6 +121,7 @@ export const enum PatchFlags {
    * render functions, which should always be fully diffed)
    * OR manually cloneVNodes
    */
+  // 标记不需要优化
   BAIL = -2
 }
 

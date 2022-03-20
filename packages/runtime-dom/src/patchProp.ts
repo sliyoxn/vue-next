@@ -1,3 +1,9 @@
+/**
+ * 提供操作节点属性的API
+ */
+
+// 这几个包用于更新特殊的属性
+// 分别是class，style，attr，prop，事件处理
 import { patchClass } from './modules/class'
 import { patchStyle } from './modules/style'
 import { patchAttr } from './modules/attrs'
@@ -13,6 +19,18 @@ type DOMRendererOptions = RendererOptions<Node, Element>
 export const forcePatchProp: DOMRendererOptions['forcePatchProp'] = (_, key) =>
   key === 'value'
 
+/**
+ * 用于更新属性
+ * @param el
+ * @param key
+ * @param prevValue
+ * @param nextValue
+ * @param isSVG
+ * @param prevChildren
+ * @param parentComponent
+ * @param parentSuspense
+ * @param unmountChildren
+ */
 export const patchProp: DOMRendererOptions['patchProp'] = (
   el,
   key,
@@ -27,18 +45,24 @@ export const patchProp: DOMRendererOptions['patchProp'] = (
   switch (key) {
     // special
     case 'class':
+      // 处理class
       patchClass(el, nextValue, isSVG)
       break
+    // 处理style
     case 'style':
       patchStyle(el, prevValue, nextValue)
       break
     default:
+      // 处理事件
       if (isOn(key)) {
         // ignore v-model listeners
+        // 判断key.startsWith('onUpdate:')
         if (!isModelListener(key)) {
+          // 处理事件
           patchEvent(el, key, prevValue, nextValue, parentComponent)
         }
       } else if (shouldSetAsProp(el, key, nextValue, isSVG)) {
+        // 处理prop
         patchDOMProp(
           el,
           key,
@@ -53,6 +77,7 @@ export const patchProp: DOMRendererOptions['patchProp'] = (
         // :true-value & :false-value
         // store value as dom properties since non-string values will be
         // stringified.
+        // 只有不是以上的才是普通属性
         if (key === 'true-value') {
           ;(el as any)._trueValue = nextValue
         } else if (key === 'false-value') {

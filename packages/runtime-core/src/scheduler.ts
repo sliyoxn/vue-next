@@ -30,6 +30,7 @@ export interface SchedulerJob {
 export type SchedulerCb = Function & { id?: number }
 export type SchedulerCbs = SchedulerCb | SchedulerCb[]
 
+// 标记是否正在刷新
 let isFlushing = false
 let isFlushPending = false
 
@@ -79,6 +80,11 @@ function findInsertionIndex(job: SchedulerJob) {
   return start
 }
 
+/**
+ * 实现effect调度
+ * 用于实现异步批处理
+ * @param job
+ */
 export function queueJob(job: SchedulerJob) {
   // the dedupe search uses the startIndex argument of Array.includes()
   // by default the search index includes the current job that is being run
@@ -86,6 +92,7 @@ export function queueJob(job: SchedulerJob) {
   // if the job is a watch() callback, the search will start with a +1 index to
   // allow it recursively trigger itself - it is the user's responsibility to
   // ensure it doesn't end up in an infinite loop.
+  // 去重 重复的就不加了
   if (
     (!queue.length ||
       !queue.includes(
@@ -94,19 +101,23 @@ export function queueJob(job: SchedulerJob) {
       )) &&
     job !== currentPreFlushParentJob
   ) {
+    // 不重复就加
     const pos = findInsertionIndex(job)
     if (pos > -1) {
       queue.splice(pos, 0, job)
     } else {
       queue.push(job)
     }
+    // 定义在下面
     queueFlush()
   }
 }
 
 function queueFlush() {
+  // 如果不是正在刷新
   if (!isFlushing && !isFlushPending) {
     isFlushPending = true
+    // 开启清空任务
     currentFlushPromise = resolvedPromise.then(flushJobs)
   }
 }
@@ -238,9 +249,12 @@ function flushJobs(seen?: CountMap) {
   //    priority number)
   // 2. If a component is unmounted during a parent component's update,
   //    its update can be skipped.
+  // cb时要确保一定的顺序
+  // 比如父组件要在子组件前刷新
   queue.sort((a, b) => getId(a) - getId(b))
 
   try {
+    // 依次执行
     for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
       const job = queue[flushIndex]
       if (job) {
@@ -251,6 +265,7 @@ function flushJobs(seen?: CountMap) {
       }
     }
   } finally {
+    // 清空队列
     flushIndex = 0
     queue.length = 0
 

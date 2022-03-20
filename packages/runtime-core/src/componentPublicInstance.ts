@@ -257,6 +257,7 @@ export interface ComponentRenderContext {
 
 export const PublicInstanceProxyHandlers: ProxyHandler<any> = {
   get({ _: instance }: ComponentRenderContext, key: string) {
+    // 用于取值时去setupState, 组件的props, data(Vue2用的)查找结果
     const {
       ctx,
       setupState,
@@ -284,8 +285,10 @@ export const PublicInstanceProxyHandlers: ProxyHandler<any> = {
     // access on a plain object, so we use an accessCache object (with null
     // prototype) to memoize what access type a key corresponds to.
     let normalizedProps
+    // 禁止访问$开头的变量
     if (key[0] !== '$') {
       const n = accessCache![key]
+      // 取值，优先级为 setupState -> props -> data
       if (n !== undefined) {
         switch (n) {
           case AccessTypes.SETUP:

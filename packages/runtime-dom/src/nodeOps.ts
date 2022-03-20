@@ -1,3 +1,6 @@
+/**
+ * 提供浏览器环境下操作DOM的API
+ */
 import { RendererOptions } from '@vue/runtime-core'
 
 export const svgNS = 'http://www.w3.org/2000/svg'
@@ -8,10 +11,12 @@ let tempContainer: HTMLElement
 let tempSVGContainer: SVGElement
 
 export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
+  // 插入
   insert: (child, parent, anchor) => {
     parent.insertBefore(child, anchor || null)
   },
 
+  // 移除
   remove: child => {
     const parent = child.parentNode
     if (parent) {
@@ -19,6 +24,7 @@ export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
     }
   },
 
+  // 创建元素
   createElement: (tag, isSVG, is, props): Element => {
     const el = isSVG
       ? doc.createElementNS(svgNS, tag)
@@ -31,28 +37,36 @@ export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
     return el
   },
 
+  // 创建text节点
   createText: text => doc.createTextNode(text),
 
+  // 创建注释
   createComment: text => doc.createComment(text),
 
+  // 设置文本节点的内容
   setText: (node, text) => {
     node.nodeValue = text
   },
 
+  // 设置元素节点的文本内容
   setElementText: (el, text) => {
     el.textContent = text
   },
 
+  // 获取父节点
   parentNode: node => node.parentNode as Element | null,
 
+  // 获取兄弟节点
   nextSibling: node => node.nextSibling,
 
+  // 查询
   querySelector: selector => doc.querySelector(selector),
 
   setScopeId(el, id) {
     el.setAttribute(id, '')
   },
 
+  // 克隆节点
   cloneNode(el) {
     const cloned = el.cloneNode(true)
     // #3072

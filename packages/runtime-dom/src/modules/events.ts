@@ -61,6 +61,14 @@ export function removeEventListener(
   el.removeEventListener(event, handler, options)
 }
 
+/**
+ * 用于处理函数变化的情况
+ * @param el
+ * @param rawName 事件名
+ * @param prevValue
+ * @param nextValue
+ * @param instance
+ */
 export function patchEvent(
   el: Element & { _vei?: Record<string, Invoker | undefined> },
   rawName: string,
@@ -69,19 +77,28 @@ export function patchEvent(
   instance: ComponentInternalInstance | null = null
 ) {
   // vei = vue event invokers
+  // 标识这个元素上所有的事件调用
   const invokers = el._vei || (el._vei = {})
+  // 查看事件invokers是否存在
   const existingInvoker = invokers[rawName]
+  // 如果事件invokers存在
   if (nextValue && existingInvoker) {
     // patch
+    // 直接设置invokers的value属性
     existingInvoker.value = nextValue
   } else {
+    // 这个name应该是事件名 options应该是.lazy这些修饰符
     const [name, options] = parseName(rawName)
+    // 如果事件invokers不存在
     if (nextValue) {
       // add
+      // 创建一个invokers
       const invoker = (invokers[rawName] = createInvoker(nextValue, instance))
+      // 通过addEventListener api绑定invoker为事件处理
       addEventListener(el, name, invoker, options)
     } else if (existingInvoker) {
       // remove
+      // 通过removeEventListener移除事件
       removeEventListener(el, name, existingInvoker, options)
       invokers[rawName] = undefined
     }
@@ -104,6 +121,12 @@ function parseName(name: string): [string, EventListenerOptions | undefined] {
   return [hyphenate(name.slice(2)), options]
 }
 
+/**
+ * Invoker是一个函数 因为直接给元素通过addEventListener绑定函数 在后续改绑or删除时不好删
+ * 所以就用Invoker作为一个中间者，在invoker里执行绑定的函数(也就是.value属性)，但是给元素始终绑定的是invoker
+ * @param initialValue
+ * @param instance
+ */
 function createInvoker(
   initialValue: EventValue,
   instance: ComponentInternalInstance | null

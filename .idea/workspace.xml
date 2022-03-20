@@ -51,16 +51,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a3f2368-0abe-4a40-b3ed-8195bd9d63da" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/packages/reactivity/examples/computed.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/packages/reactivity/examples/relative.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/runtime-dom/examples/render.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/baseHandlers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/computed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/computed.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/effect.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/reactivity/examples/relative.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/examples/relative.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/reactive.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/reactivity/src/ref.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/shared/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/apiCreateApp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/apiCreateApp.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/componentPublicInstance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/componentPublicInstance.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/componentRenderUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/componentRenderUtils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/h.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/h.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/renderer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/renderer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/scheduler.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/scheduler.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-core/src/vnode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-core/src/vnode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/modules/attrs.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/modules/attrs.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/modules/class.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/modules/class.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/modules/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/modules/events.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/modules/style.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/modules/style.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/nodeOps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/nodeOps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/runtime-dom/src/patchProp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/runtime-dom/src/patchProp.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/patchFlags.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/patchFlags.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/shared/src/shapeFlags.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/shared/src/shapeFlags.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +107,7 @@
     <property name="node.js.selected.package.standard" value="" />
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
-    <property name="ts.external.directory.path" value="C:\Sortware\WebStorm\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="E:\LearnSpaces\vue-next\node_modules\typescript\lib" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -110,6 +121,13 @@
       <workItem from="1638801197560" duration="6000" />
       <workItem from="1638801371887" duration="10942000" />
       <workItem from="1638967527219" duration="12094000" />
+      <workItem from="1639034456410" duration="9633000" />
+      <workItem from="1639637977766" duration="20019000" />
+      <workItem from="1640003323320" duration="21113000" />
+      <workItem from="1640345831245" duration="4740000" />
+      <workItem from="1641111898088" duration="9590000" />
+      <workItem from="1645512587721" duration="1154000" />
+      <workItem from="1647785608255" duration="330000" />
     </task>
     <servers />
   </component>
@@ -141,9 +159,24 @@
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
     <state x="526" y="221" key="SettingsEditor/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1638708878272" />
-    <state x="783" y="259" width="598" height="568" key="find.popup" timestamp="1639027047311">
+    <state x="783" y="259" width="598" height="592" key="find.popup" timestamp="1641215813124">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
-    <state x="783" y="259" width="598" height="568" key="find.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1639027047311" />
+    <state x="783" y="259" width="598" height="592" key="find.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1641215813124" />
+    <state x="681" y="229" width="672" height="678" key="search.everywhere.popup" timestamp="1640320493788">
+      <screen x="0" y="0" width="2048" height="1152" />
+    </state>
+    <state x="681" y="229" width="672" height="678" key="search.everywhere.popup/-1920.0.1536.864/0.0.2048.1152@0.0.2048.1152" timestamp="1640320493788" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/packages/runtime-core/src/renderer.ts</url>
+          <line>889</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

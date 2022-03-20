@@ -1,3 +1,7 @@
+/**
+ * 提供浏览器环境下操作dom的API
+ * 处理平台差异性问题
+ */
 import {
   createRenderer,
   createHydrationRenderer,
@@ -53,20 +57,35 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+/**
+ * 入口 创建App
+ */
 export const createApp = ((...args) => {
+  // ensureRenderer会查看render是否存在
+  // 不存在的话就创建一个新的render
+  // 然后用render.createApp创建应用(且把配置传进去, 感觉这个args命名怪怪的)
+  // render是属于runtime-dom的
+  // 而createApp最后调用的是runtime-core里的
   const app = ensureRenderer().createApp(...args)
 
+  // dev 不看
   if (__DEV__) {
     injectNativeTagCheck(app)
     injectCompilerOptionsCheck(app)
   }
 
+  // mount
   const { mount } = app
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 规格化container
+    // 把string转化为element对象
     const container = normalizeContainer(containerOrSelector)
+    // container不存在就返回
     if (!container) return
 
     const component = app._component
+    // 貌似是没有模板就用innerHTML作为模板
+    // 不过有安全问题
     if (!isFunction(component) && !component.render && !component.template) {
       // __UNSAFE__
       // Reason: potential execution of JS expressions in in-DOM template.
@@ -89,7 +108,10 @@ export const createApp = ((...args) => {
     }
 
     // clear content before mounting
+    // 在挂载前清空container
     container.innerHTML = ''
+    // 函数劫持
+    // 挂载组件到容器中
     const proxy = mount(container, false, container instanceof SVGElement)
     if (container instanceof Element) {
       container.removeAttribute('v-cloak')
@@ -129,7 +151,7 @@ function injectNativeTagCheck(app: App) {
   })
 }
 
-// dev only
+// dev                                                                                                                                                           only
 function injectCompilerOptionsCheck(app: App) {
   if (isRuntimeOnly()) {
     const isCustomElement = app.config.isCustomElement

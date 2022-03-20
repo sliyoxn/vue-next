@@ -171,8 +171,17 @@ export function h<P>(
 ): VNode
 
 // Actual implementation
+/**
+ * 定义createElement方法
+ * h用于生成虚拟DOM
+ * @param type
+ * @param propsOrChildren
+ * @param children
+ */
 export function h(type: any, propsOrChildren?: any, children?: any): VNode {
   const l = arguments.length
+  // 根据参数个数处理
+  // 反正就是生成 太详细的懒得看了(毕竟我也没记全所有参数传入情况)
   if (l === 2) {
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
       // single vnode without props

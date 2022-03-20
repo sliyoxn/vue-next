@@ -38,6 +38,10 @@ export function markAttrsAccessed() {
   accessedAttrs = true
 }
 
+/**
+ * 定义renderComponentRoot
+ * @param instance
+ */
 export function renderComponentRoot(
   instance: ComponentInternalInstance
 ): VNode {

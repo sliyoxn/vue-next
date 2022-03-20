@@ -158,11 +158,13 @@ export function createAppAPI<HostElement>(
       rootProps = null
     }
 
+    // App context
     const context = createAppContext()
     const installedPlugins = new Set()
 
     let isMounted = false
 
+    // app对象
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -184,6 +186,7 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // 定义use
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
@@ -202,6 +205,7 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      // 定义mixin
       mixin(mixin: ComponentOptions) {
         if (__FEATURE_OPTIONS_API__) {
           if (!context.mixins.includes(mixin)) {
@@ -223,6 +227,7 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      // 定义component方法
       component(name: string, component?: Component): any {
         if (__DEV__) {
           validateComponentName(name, context.config)
@@ -237,6 +242,7 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      // 定义directive
       directive(name: string, directive?: Directive) {
         if (__DEV__) {
           validateDirectiveName(name)
@@ -257,7 +263,17 @@ export function createAppAPI<HostElement>(
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
+        /**
+         * mount用于挂载
+         * 步骤如下
+         * 1. 根据组件创建虚拟DOM
+         * 2. 调用render方法将虚拟DOM渲染到容器中
+         */
+
         if (!isMounted) {
+          // 看看状态是不是未挂载
+
+          // 创建虚拟DOM
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -273,11 +289,15 @@ export function createAppAPI<HostElement>(
             }
           }
 
+          // 判断是不是混合APP
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // Web端会走这里
+            // 注意render的定义在renderer.ts里
             render(vnode, rootContainer, isSVG)
           }
+          // 存储状态
           isMounted = true
           app._container = rootContainer
           // for devtools and telemetry
@@ -289,6 +309,7 @@ export function createAppAPI<HostElement>(
 
           return vnode.component!.proxy
         } else if (__DEV__) {
+          // dev报错 不看
           warn(
             `App has already been mounted.\n` +
               `If you want to remount the same app, move your app creation logic ` +

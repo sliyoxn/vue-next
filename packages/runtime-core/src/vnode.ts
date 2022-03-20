@@ -247,6 +247,14 @@ export function setBlockTracking(value: number) {
  *
  * @private
  */
+/**
+ * 定义createBlock
+ * @param type
+ * @param props
+ * @param children
+ * @param patchFlag
+ * @param dynamicProps
+ */
 export function createBlock(
   type: VNodeTypes | ClassComponent,
   props?: Record<string, any> | null,
@@ -334,6 +342,15 @@ export const createVNode = (__DEV__
   ? createVNodeWithArgsTransform
   : _createVNode) as typeof _createVNode
 
+/**
+ *
+ * @param type 用于标记VNode的类型 比如是组件还是普通的元素
+ * @param props
+ * @param children
+ * @param patchFlag
+ * @param dynamicProps
+ * @param isBlockNode
+ */
 function _createVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -415,27 +432,35 @@ function _createVNode(
     )
   }
 
+  // 日 怎么Vue3还直接创建VNode啊
   const vnode: VNode = {
+    // 标记是否为VNode
     __v_isVNode: true,
     __v_skip: true,
+    // 类型和属性
     type,
     props,
+    // key，用于diff
     key: props && normalizeKey(props),
+    // ref
     ref: props && normalizeRef(props),
     scopeId: currentScopeId,
     slotScopeIds: null,
     children: null,
+    // 存放组件对应的实例, 上面包含组件的数据
     component: null,
     suspense: null,
     ssContent: null,
     ssFallback: null,
     dirs: null,
     transition: null,
+    // 用于指向真实DOM
     el: null,
     anchor: null,
     target: null,
     targetAnchor: null,
     staticCount: 0,
+    // 标记节点类型
     shapeFlag,
     patchFlag,
     dynamicProps,
@@ -448,6 +473,7 @@ function _createVNode(
     warn(`VNode created with invalid key (NaN). VNode type:`, vnode.type)
   }
 
+  // 标记VNode的子节点类型
   normalizeChildren(vnode, children)
 
   // normalize suspense children
@@ -457,6 +483,7 @@ function _createVNode(
     vnode.ssFallback = fallback
   }
 
+  // 收集节点
   if (
     shouldTrack > 0 &&
     // avoid a block node from tracking itself
@@ -600,6 +627,10 @@ export function createCommentVNode(
     : createVNode(Comment, null, text)
 }
 
+/**
+ * 定义normalizeVNode方法
+ * @param child
+ */
 export function normalizeVNode(child: VNodeChild): VNode {
   if (child == null || typeof child === 'boolean') {
     // empty placeholder
@@ -613,6 +644,7 @@ export function normalizeVNode(child: VNodeChild): VNode {
     return child.el === null ? child : cloneVNode(child)
   } else {
     // strings and numbers
+    // 字符串用VNode包装
     return createVNode(Text, null, String(child))
   }
 }
@@ -623,9 +655,12 @@ export function cloneIfMounted(child: VNode): VNode {
 }
 
 export function normalizeChildren(vnode: VNode, children: unknown) {
+  // res 子元素类型
   let type = 0
   const { shapeFlag } = vnode
   if (children == null) {
+    // 没有子节点
+    // 貌似没啥处理
     children = null
   } else if (isArray(children)) {
     type = ShapeFlags.ARRAY_CHILDREN
@@ -674,6 +709,7 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
     }
   }
   vnode.children = children as VNodeNormalizedChildren
+  // 总之就是或运算进行标记
   vnode.shapeFlag |= type
 }
 

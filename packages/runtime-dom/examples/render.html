@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app"></div>
+<script src="../dist/runtime-dom.global.js"></script>
+<script>
+    let {createApp, h, reactive, onMounted} = VueRuntimeDOM;
+    let app = document.getElementById("app");
+    let App = {
+
+        props: ['name'],
+
+        setup(props, context) {
+
+            console.log(props, context);
+
+            const state = reactive({
+                count: 1
+            });
+
+            onMounted(() => {
+                console.log('mounted');
+            })
+
+            // 可以返回对象也可以返回render函数
+            // 返回对象会用于合并
+            // 返回render函数会用于渲染(一个effect 依赖的数据变化了会重新执行)
+            return {
+                state
+            }
+
+        },
+        // 老写法 会和setup的返回值合并
+        data() {
+            return {
+                a: 1
+            }
+        },
+        render(proxy) {
+            console.log(proxy);
+            return h('div', {
+                style: {
+                    color: 'black'
+                }
+            }, proxy.name, proxy.state.count)
+        }
+    }
+
+    createApp(App, {name: 'Sakura'}).mount(app);
+
+</script>
+</body>
+</html>

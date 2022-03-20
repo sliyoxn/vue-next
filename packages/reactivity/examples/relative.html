@@ -7,15 +7,23 @@
 <body>
     <script src="../dist/reactivity.global.js"></script>
     <script>
-        const {reactive, ref, readonly} = VueReactivity;
+        const {reactive, ref, readonly, effect} = VueReactivity;
         const data = {
             name: 'Sakura',
             age: 16
         }
         const proxy = reactive(data);
-        debugger;
-        const readonlyProxy = readonly(proxy);
-        console.log(readonlyProxy === proxy);
+        effect(() => {
+            document.title = proxy.name;
+        })
+        setTimeout(() => {
+            proxy.name = 'Snow';
+        }, 1000)
+
+
+        // debugger;
+        // const readonlyProxy = readonly(proxy);
+        // console.log(readonlyProxy === proxy);
     </script>
 </body>
 </html>

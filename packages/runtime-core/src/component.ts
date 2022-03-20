@@ -425,6 +425,12 @@ const emptyAppContext = createAppContext()
 
 let uid = 0
 
+/**
+ * 创建组件的实例
+ * @param vnode 虚拟DOM
+ * @param parent
+ * @param suspense
+ */
 export function createComponentInstance(
   vnode: VNode,
   parent: ComponentInternalInstance | null,
@@ -472,10 +478,13 @@ export function createComponentInstance(
     // state
     ctx: EMPTY_OBJ,
     data: EMPTY_OBJ,
+    // 嗯哼 prop和attr
+    // vNode的prop是包含这两个的
     props: EMPTY_OBJ,
     attrs: EMPTY_OBJ,
     slots: EMPTY_OBJ,
     refs: EMPTY_OBJ,
+    // setup的返回值
     setupState: EMPTY_OBJ,
     setupContext: null,
 
@@ -487,6 +496,7 @@ export function createComponentInstance(
 
     // lifecycle hooks
     // not using enums here because it results in computed properties
+    // 标识这个组件是否已经挂载
     isMounted: false,
     isUnmounted: false,
     isDeactivated: false,
@@ -508,6 +518,8 @@ export function createComponentInstance(
   if (__DEV__) {
     instance.ctx = createRenderContext(instance)
   } else {
+    // emm 大概就是ctx
+    // 用于创建proxy（详情看setupStatefulComponent）
     instance.ctx = { _: instance }
   }
   instance.root = parent ? parent.root : instance
@@ -544,17 +556,30 @@ export function isStatefulComponent(instance: ComponentInternalInstance) {
 
 export let isInSSRComponentSetup = false
 
+/**
+ * 定义setupComponent
+ * 将数据解析到组件上
+ * @param instance
+ * @param isSSR
+ */
 export function setupComponent(
   instance: ComponentInternalInstance,
   isSSR = false
 ) {
   isInSSRComponentSetup = isSSR
 
+  // 获取prop和children
   const { props, children } = instance.vnode
+  // 看看当前组件是否为有状态组件
   const isStateful = isStatefulComponent(instance)
+
+  // 解析出props和attr 放到组件上
   initProps(instance, props, isStateful, isSSR)
+  // 处理插槽
   initSlots(instance, children)
 
+  // 如果是有状态组件
+  // 调用组件的setup方法
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
     : undefined
@@ -562,6 +587,11 @@ export function setupComponent(
   return setupResult
 }
 
+/**
+ * 处理setup
+ * @param instance
+ * @param isSSR
+ */
 function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean
@@ -596,28 +626,40 @@ function setupStatefulComponent(
   instance.accessCache = Object.create(null)
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
+  // 1. 代理传递给render的参数
+  // proxy中包含prop和setup的返回值
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
+  // 2. 拿到组件的setup方法并调用
   const { setup } = Component
+  // 看看setup是否存在
   if (setup) {
+    // 创建一个setup的上下文
+    // 会传递到setup里（包含attrs,slots, emit）
+    // setup有两个参数prop和ctx, 这个就是ctx
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
     currentInstance = instance
+    // 执行前暂停tracking
     pauseTracking()
+    // 执行setup
     const setupResult = callWithErrorHandling(
       setup,
       instance,
       ErrorCodes.SETUP_FUNCTION,
+      // 参数就是prop和context
       [__DEV__ ? shallowReadonly(instance.props) : instance.props, setupContext]
     )
+    // 执行后恢复tracking
     resetTracking()
     currentInstance = null
 
     if (isPromise(setupResult)) {
+      // 如果返回值是promise
       if (isSSR) {
         // return the promise so server-renderer can wait on it
         return setupResult
@@ -638,18 +680,31 @@ function setupStatefulComponent(
         )
       }
     } else {
+      // 不是promise就直接处理
+      // 用于处理Setup返回render函数的情况
+      // 这里会调用finishComponentSetup
       handleSetupResult(instance, setupResult, isSSR)
     }
   } else {
+    // 不存在的话
+    // 直接调用finishComponentSetup
+    // 会进行模板编译生成render函数
     finishComponentSetup(instance, isSSR)
   }
 }
 
+/**
+ * 处理setup的返回结果
+ * @param instance
+ * @param setupResult
+ * @param isSSR
+ */
 export function handleSetupResult(
   instance: ComponentInternalInstance,
   setupResult: unknown,
   isSSR: boolean
 ) {
+  // 处理setup返回一个render函数的情况
   if (isFunction(setupResult)) {
     // setup returned an inline render function
     if (__NODE_JS__ && (instance.type as ComponentOptions).__ssrInlineRender) {
@@ -657,9 +712,11 @@ export function handleSetupResult(
       // set it as ssrRender instead.
       instance.ssrRender = setupResult
     } else {
+      // 设置组件的render为setup返回值
       instance.render = setupResult as InternalRenderFunction
     }
   } else if (isObject(setupResult)) {
+    // setup返回对象
     if (__DEV__ && isVNode(setupResult)) {
       warn(
         `setup() should not return VNodes directly - ` +
@@ -671,6 +728,7 @@ export function handleSetupResult(
     if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
       instance.devtoolsRawSetupState = setupResult
     }
+    // 存储setupState到instance上
     instance.setupState = proxyRefs(setupResult)
     if (__DEV__) {
       exposeSetupStateOnRenderContext(instance)
@@ -703,6 +761,12 @@ export function registerRuntimeCompiler(_compile: any) {
   compile = _compile
 }
 
+/**
+ * 定义finishComponentSetup方法
+ * @param instance
+ * @param isSSR
+ * @param skipOptions
+ */
 export function finishComponentSetup(
   instance: ComponentInternalInstance,
   isSSR: boolean,
@@ -729,8 +793,11 @@ export function finishComponentSetup(
       Component.render ||
       NOOP) as InternalRenderFunction
   } else if (!instance.render) {
+    // 浏览器端会走这里
+    // 如果render不存在 就对template模板进行编译 然后产生render函数
     // could be set from setup()
     if (compile && !Component.render) {
+      // 模板编译
       const template =
         (__COMPAT__ &&
           instance.vnode.props &&
@@ -762,6 +829,7 @@ export function finishComponentSetup(
             extend(finalCompilerOptions.compatConfig, Component.compatConfig)
           }
         }
+        // 扒拉一堆 生成了render函数
         Component.render = compile(template, finalCompilerOptions)
         if (__DEV__) {
           endMeasure(instance, `compile`)
@@ -769,6 +837,7 @@ export function finishComponentSetup(
       }
     }
 
+    // 设置render到instance上
     instance.render = (Component.render || NOOP) as InternalRenderFunction
 
     // for runtime-compiled render functions using `with` blocks, the render
